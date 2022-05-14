@@ -1,0 +1,25 @@
+{
+  "name": "solitaire-rpg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "webpack serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "colt",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.0",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.0"
+  },
+  "dependencies": {
+    "css-loader": "^6.7.1",
+    "less-loader": "^10.2.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.0"
+  }
+}
