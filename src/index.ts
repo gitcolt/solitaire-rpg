@@ -1,9 +1,13 @@
 import {Player} from './player';
+import {Overworld} from './overworld';
 import {DrawPile, PlayField, CARD_WIDTH, CARD_HEIGHT} from './card';
 import {CardGame} from './cardGame';
-import {pointInBounds} from './utils';
+import {pointInBounds, dist} from './utils';
 import {GameManager, GameMode} from './gameManager';
 import {InputManager, Key} from './input';
+import playerTextureAtlasPath from './assets/player.png';
+import overworldImagePath from './assets/overworld.png';
+import {BattleTransitionAnimation} from './transitionAnimation';
 
 import './styles.less';
 
@@ -64,8 +68,7 @@ function onKeyDownOverworldMode(e: KeyboardEvent) {
 
 function onKeyUpOverworldMode(e: KeyboardEvent) {
   switch (e.key) {
-    case 'w':
-    case 'ArrowUp':
+    case 'w': case 'ArrowUp':
       inputManager.keyStates.set(Key.UP, false);
       break;
     case 'a':
@@ -108,10 +111,22 @@ function onClickCardBattleMode(e: MouseEvent) {
 }
 
 const inputManager = new InputManager();
-
 const gameManager = new GameManager();
 
-const player = new Player(100, 100);
+const player = new Player(200, 80);
+const playerTextureAtlas = new Image();
+playerTextureAtlas.addEventListener('load', () => {
+  player.textureAtlas = playerTextureAtlas;
+});
+playerTextureAtlas.src = playerTextureAtlasPath;
+
+const overworld = new Overworld();
+const overworldImage = new Image();
+overworldImage.addEventListener('load', () => {
+  overworld.backgroundTexture = overworldImage;
+});
+overworldImage.src = overworldImagePath;
+
 
 const drawPile = new DrawPile();
 
@@ -129,16 +144,27 @@ inputManager.keyToCommand.set(Key.DOWN, () => player.moveDown());
 inputManager.keyToCommand.set(Key.LEFT, () => player.moveLeft());
 inputManager.keyToCommand.set(Key.RIGHT, () => player.moveRight());
 
+const transition = new BattleTransitionAnimation(50, () => {gameManager.transitionToMode(GameMode.CARD_BATTLE)});
+
 let frameCount = 0;
 (function loop() {
-  inputManager.processInput();
+  if (!transition.isPlaying) {
+    inputManager.processInput();
+  }
 
   ctx.clearRect(0, 0, can.width, can.height);
 
-  if (gameManager.currMode == GameMode.OVERWORLD)
+  if (gameManager.currMode == GameMode.OVERWORLD) {
+    overworld.render(ctx);
     player.render(ctx);
-  else if (gameManager.currMode == GameMode.CARD_BATTLE)
+    if (transition.isPlaying) {
+      transition.tick();
+      transition.render(ctx);
+    } else if (dist(player.posX, player.posY, 4 * can.width/10, 9 * can.height / 20) < 80)
+      transition.start();
+  } else if (gameManager.currMode == GameMode.CARD_BATTLE) {
     cardGame.render(ctx);
+  }
 
   ++frameCount;
   requestAnimationFrame(loop);

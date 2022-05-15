@@ -8,5 +8,5 @@
     "moduleResolution": "node",
     "sourceMap": true
   },
-  "files": ["src/index.ts"]
+  "files": ["src/index.ts", "image-types.d.ts"]
 }

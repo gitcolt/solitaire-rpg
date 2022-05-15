@@ -6,3 +6,7 @@ export function pointInBounds(x: number, y: number,
          y > startY &&
          y < endY;
 }
+
+export function dist(x1: number, y1: number, x2: number, y2: number) {
+  return Math.sqrt((x2 - x1)**2 + (y2 - y1)**2);
+}
