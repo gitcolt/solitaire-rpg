@@ -1,4 +1,4 @@
-import {Card, renderCard, DrawPile, PlayField, PlayFieldSlot} from './card';
+import {Card, renderCard, DrawPile, PlayField, Slot} from './card';
 
 export class CardGame {
   playField: PlayField;
@@ -17,15 +17,20 @@ export class CardGame {
     this.drawPilePosY = 400;
     this.playFieldPosX = 400;
     this.playFieldPosY = 100
+    this.drawCard();
+  }
+
+  drawCard() {
+    this.drawnCard = this.drawPile.drawCard();
+    if (this.drawnCard)
+      this.drawnCard.isFaceUp = true;
   }
 
   onClickDrawPile() {
-      this.drawnCard = this.drawPile.drawCard();
-      if (this.drawnCard)
-        this.drawnCard.isFaceUp = true;
+    this.drawCard();
   }
 
-  onClickSlot(slot: PlayFieldSlot) {
+  onClickSlot(slot: Slot) {
     if (!this.drawnCard)
       return;
 

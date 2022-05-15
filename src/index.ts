@@ -1,6 +1,6 @@
 import {Player} from './player';
 import {Overworld} from './overworld';
-import {DrawPile, PlayField, CARD_WIDTH, CARD_HEIGHT} from './card';
+import {DrawPile, PlayField, CARD_WIDTH, CARD_HEIGHT, Slot, SlotGroup} from './card';
 import {CardGame} from './cardGame';
 import {pointInBounds, dist} from './utils';
 import {GameManager, GameMode} from './gameManager';
@@ -100,11 +100,17 @@ function onClickCardBattleMode(e: MouseEvent) {
                          cardGame.playFieldPosY,
                          cardGame.playFieldPosX + cardGame.playField.width,
                          cardGame.playFieldPosY + cardGame.playField.height)) {
-    const clickedSlot = cardGame.playField.slots.find(s => pointInBounds(x, y,
-                                      cardGame.playFieldPosX + s.offsetX,
-                                      cardGame.playFieldPosY + s.offsetY,
-                                      cardGame.playFieldPosX + s.offsetX + CARD_WIDTH,
-                                      cardGame.playFieldPosY + s.offsetY + CARD_HEIGHT));
+    const clickedSlot = cardGame.playField.slotGroups.map(sg => {
+                                                          const slotsWithCards = sg.slots.filter(s => s.card);
+                                                          return slotsWithCards.length ? slotsWithCards[slotsWithCards.length - 1] :
+                                                                                         null;
+                                                   }).filter(s => s != null)
+                                                     .find(s => pointInBounds(
+                                                       x, y,
+                                                       cardGame.playFieldPosX + s.offsetX,
+                                                       cardGame.playFieldPosY + s.offsetY,
+                                                       cardGame.playFieldPosX + s.offsetX + CARD_WIDTH,
+                                                       cardGame.playFieldPosY + s.offsetY + CARD_HEIGHT));
     if (clickedSlot)
       cardGame.onClickSlot(clickedSlot);
   }
@@ -131,10 +137,24 @@ overworldImage.src = overworldImagePath;
 const drawPile = new DrawPile();
 
 const playField = new PlayField(400, 200);
-playField.addSlot( 15, 15);
-playField.addSlot(115, 15);
-playField.addSlot(215, 15);
-playField.addSlot(315, 15);
+playField.addSlotGroup(15, 15);
+playField.addSlotToSlotGroup(playField.slotGroups[0], 0, 0);
+playField.addSlotToSlotGroup(playField.slotGroups[0], 5, 5);
+playField.addSlotToSlotGroup(playField.slotGroups[0], 10, 10);
+playField.addSlotGroup(115, 15);
+playField.addSlotToSlotGroup(playField.slotGroups[1], 0, 0);
+playField.addSlotToSlotGroup(playField.slotGroups[1], 5, 5);
+playField.addSlotToSlotGroup(playField.slotGroups[1], 10, 10);
+playField.addSlotToSlotGroup(playField.slotGroups[1], 15, 15);
+playField.addSlotGroup(215, 15);
+playField.addSlotToSlotGroup(playField.slotGroups[2], 0, 0);
+playField.addSlotToSlotGroup(playField.slotGroups[2], 5, 5);
+playField.addSlotToSlotGroup(playField.slotGroups[2], 10, 10);
+playField.addSlotToSlotGroup(playField.slotGroups[2], 15, 15);
+playField.addSlotGroup(315, 15);
+playField.addSlotToSlotGroup(playField.slotGroups[3], 0, 0);
+playField.addSlotToSlotGroup(playField.slotGroups[3], 5, 5);
+playField.addSlotToSlotGroup(playField.slotGroups[3], 10, 10);
 playField.populate();
 
 const cardGame = new CardGame(playField, drawPile);

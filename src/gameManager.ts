@@ -7,7 +7,7 @@ export class GameManager {
   currMode: GameMode;
 
   constructor() {
-    this.currMode = GameMode.OVERWORLD;
+    this.currMode = GameMode.CARD_BATTLE;
   }
 
   transitionToMode(mode: GameMode) {

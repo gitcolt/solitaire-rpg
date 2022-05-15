@@ -66,6 +66,9 @@ export function renderCard(ctx: CanvasRenderingContext2D,
     ctx.font = 'bold 20px sans-serif';
     ctx.fillText(valToString(card.val), posX + 10, posY + 20);
     ctx.fillText(suitToString(card.suit), posX + 15, posY + 45);
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(posX, posY, CARD_WIDTH, CARD_HEIGHT);
   } else {
     ctx.fillStyle = 'blue';
     ctx.fillRect(posX, posY, CARD_WIDTH, CARD_HEIGHT);
@@ -135,7 +138,13 @@ export class DrawPile {
   }
 }
 
-export interface PlayFieldSlot {
+export interface SlotGroup {
+  offsetX: number;
+  offsetY: number;
+  slots: Slot[];
+}
+
+export interface Slot {
   offsetX: number;
   offsetY: number;
   card: Card;
@@ -144,38 +153,51 @@ export interface PlayFieldSlot {
 export class PlayField {
   width: number;
   height: number;
-  slots: PlayFieldSlot[];
+  slotGroups: SlotGroup[];
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
-    this.slots = [];
+    this.slotGroups = [];
   }
 
   populate() {
     const deck = createDeck();
     shuffle(deck);
-    this.slots.forEach(s => {
-      s.card = deck.shift();
-      s.card.isFaceUp = true;
+    this.slotGroups.forEach(sg => {
+      sg.slots.forEach(slot => {
+        slot.card = deck.shift();
+        slot.card.isFaceUp = true;
+      });
     });
   }
 
-  addSlot(offsetX: number, offsetY: number) {
+  addSlotGroup(offsetX: number, offsetY: number) {
+    this.slotGroups.push({
+      offsetX,
+      offsetY,
+      slots: [],
+    });
+  }
+
+  addSlotToSlotGroup(slotGroup: SlotGroup, offsetX: number, offsetY: number) {
+    /*
+    // maybe the playfield grows dynamically as you add slots/slot groups?
     if (offsetX + CARD_WIDTH  > this.width  ||
         offsetY + CARD_HEIGHT > this.height ||
         offsetX < 0 || offsetY < 0) {
       console.error('Attempting to add slot outside of play field bounds');
       return;
     }
-    this.slots.push({
-      offsetX,
-      offsetY,
+   */
+    slotGroup.slots.push({
+      offsetX: slotGroup.offsetX + offsetX,
+      offsetY: slotGroup.offsetY + offsetY,
       card: null,
     });
   }
 
-  playCardOnSlot(slot: PlayFieldSlot, playerCard: Card): Card {
+  playCardOnSlot(slot: Slot, playerCard: Card): Card {
     if (!slot.card)
       return null;
     const slotCard = slot.card;
@@ -194,10 +216,11 @@ export class PlayField {
   }
 
   checkForWin(): boolean {
-    return !this.slots.some(s => s.card);
+    return this.slotGroups.every(sg => !sg.slots.some(s => s.card));
   }
 
   render(ctx: CanvasRenderingContext2D, posX: number, posY: number) {
+    /*
     if (window.debug) {
       const slotMargin = 10;
       this.slots.forEach(s => {
@@ -210,11 +233,14 @@ export class PlayField {
                        CARD_HEIGHT + slotMargin * 2);
       });
     }
+   */
 
-    this.slots.forEach(s => {
-      if (!s.card)
-        return;
-      renderCard(ctx, s.card, posX + s.offsetX, posY + s.offsetY);
+    this.slotGroups.forEach(sg => {
+      sg.slots.forEach(s => {
+        if (!s.card)
+          return;
+        renderCard(ctx, s.card, posX + s.offsetX, posY + s.offsetY);
+      });
     });
 
     ctx.beginPath();
