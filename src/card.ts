@@ -1,19 +1,19 @@
 export enum Suit {
-  Hearts,
-  Spades,
-  Clubs,
-  Diamonds,
+  HEARTS,
+  SPADES,
+  CLUBS,
+  DIAMONDS,
 }
 
 function suitToString(suit: Suit): string {
   switch (suit) {
-    case Suit.Hearts:
+    case Suit.HEARTS:
       return '\u2665';
-    case Suit.Diamonds:
+    case Suit.DIAMONDS:
       return '\u2666';
-    case Suit.Spades:
+    case Suit.SPADES:
       return '\u2660';
-    case Suit.Clubs:
+    case Suit.CLUBS:
       return '\u2663';
   }
 }
@@ -52,13 +52,13 @@ export function renderCard(ctx: CanvasRenderingContext2D,
     ctx.lineWidth = 1;
     ctx.fillRect(posX, posY, CARD_WIDTH, CARD_HEIGHT);
     switch (card.suit) {
-      case Suit.Hearts:
-      case Suit.Diamonds:
+      case Suit.HEARTS:
+      case Suit.DIAMONDS:
         ctx.strokeStyle = 'red';
         ctx.fillStyle = 'red';
         break;
-      case Suit.Clubs:
-      case Suit.Spades:
+      case Suit.CLUBS:
+      case Suit.SPADES:
         ctx.strokeStyle = 'black';
         ctx.fillStyle = 'black';
         break;
@@ -95,13 +95,13 @@ export function createDeck(): Card[] {
   for (let i = 0; i < 4; ++i) {
     let suit;
     if (i == 0)
-      suit = Suit.Hearts;
+      suit = Suit.HEARTS;
     else if (i == 1)
-      suit = Suit.Clubs;
+      suit = Suit.CLUBS;
     else if (i == 2)
-      suit = Suit.Diamonds;
+      suit = Suit.DIAMONDS;
     else
-      suit = Suit.Spades;
+      suit = Suit.SPADES;
     for (let val = 1; val <= 13; ++val) {
       cards.push({
         suit,
