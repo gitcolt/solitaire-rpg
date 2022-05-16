@@ -1,6 +1,6 @@
 import {Card, renderCard, DrawPile, PlayField, Slot} from './card';
 
-export class CardGame {
+export class CardBattle {
   playField: PlayField;
   drawPile: DrawPile;
   drawnCard: Card;
