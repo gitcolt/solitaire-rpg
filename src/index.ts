@@ -1,9 +1,8 @@
 import {Player} from './player';
 import {Overworld} from './overworld';
-import {DrawPile, PlayField, CARD_WIDTH, CARD_HEIGHT, Slot, SlotGroup} from './card';
+import {DrawPile, PlayField} from './card';
 import {CardBattle} from './cardBattle';
-import {pointInBounds} from './utils';
-import {GameManager, GameMode} from './game';
+import {GameManager} from './game';
 import {InputManager, Key} from './input';
 
 import './styles.less';
@@ -27,95 +26,28 @@ function resizeCanvas() {
 window.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key == 'q')
     window.debug = !window.debug;
-
-  if (game.currMode == GameMode.OVERWORLD)
-    onKeyDownOverworldMode(e);
+  game.onKeyDown(e);
 });
 
 window.addEventListener('keyup', (e: KeyboardEvent) => {
-  if (game.currMode == GameMode.OVERWORLD)
-    onKeyUpOverworldMode(e);
+  game.onKeyUp(e);
 });
 
 window.addEventListener('click', (e: MouseEvent) => {
-  if (game.currMode == GameMode.CARD_BATTLE)
-    onClickCardBattleMode(e);
+  game.onClick(e);
 });
 
-function onKeyDownOverworldMode(e: KeyboardEvent) {
-  switch (e.key) {
-    case 'w':
-    case 'ArrowUp':
-      input.keyStates.set(Key.UP, true);
-      break;
-    case 'a':
-    case 'ArrowLeft':
-      input.keyStates.set(Key.LEFT, true);
-      break;
-    case 's':
-    case 'ArrowDown':
-      input.keyStates.set(Key.DOWN, true);
-      break;
-    case 'd':
-    case 'ArrowRight':
-      input.keyStates.set(Key.RIGHT, true);
-      break;
-  }
-}
-
-function onKeyUpOverworldMode(e: KeyboardEvent) {
-  switch (e.key) {
-    case 'w': case 'ArrowUp':
-      input.keyStates.set(Key.UP, false);
-      break;
-    case 'a':
-    case 'ArrowLeft':
-      input.keyStates.set(Key.LEFT, false);
-      break;
-    case 's':
-    case 'ArrowDown':
-      input.keyStates.set(Key.DOWN, false);
-      break;
-    case 'd':
-    case 'ArrowRight':
-      input.keyStates.set(Key.RIGHT, false);
-      break;
-  }
-}
-
 function onClickCardBattleMode(e: MouseEvent) {
-  const [x, y] = [e.clientX, e.clientY];
-  if (pointInBounds(x, y,
-                    cardBattle.drawPilePosX,
-                    cardBattle.drawPilePosY,
-                    cardBattle.drawPilePosX + CARD_WIDTH,
-                    cardBattle.drawPilePosY + CARD_HEIGHT)) {
-    cardBattle.onClickDrawPile();
-  } 
-  else if (pointInBounds(x, y,
-                         cardBattle.playFieldPosX,
-                         cardBattle.playFieldPosY,
-                         cardBattle.playFieldPosX + cardBattle.playField.width,
-                         cardBattle.playFieldPosY + cardBattle.playField.height)) {
-    const clickedSlot = cardBattle.playField.slotGroups.map(sg => {
-                                                          const slotsWithCards = sg.slots.filter(s => s.card);
-                                                          return slotsWithCards.length ? slotsWithCards[slotsWithCards.length - 1] :
-                                                                                         null;
-                                                   }).filter(s => s != null)
-                                                     .find(s => pointInBounds(
-                                                       x, y,
-                                                       cardBattle.playFieldPosX + s.offsetX,
-                                                       cardBattle.playFieldPosY + s.offsetY,
-                                                       cardBattle.playFieldPosX + s.offsetX + CARD_WIDTH,
-                                                       cardBattle.playFieldPosY + s.offsetY + CARD_HEIGHT));
-    if (clickedSlot)
-      cardBattle.onClickSlot(clickedSlot);
-  }
 }
 
 const input = new InputManager();
 
 const player = new Player(200, 80);
+
+input.keyToCommand.set(Key.UP, () => player.moveUp());
+input.keyToCommand.set(Key.DOWN, () => player.moveDown());
+input.keyToCommand.set(Key.LEFT, () => player.moveLeft());
+input.keyToCommand.set(Key.RIGHT, () => player.moveRight());
 
 const overworld = new Overworld(player);
 
@@ -143,11 +75,6 @@ playField.addSlotToSlotGroup(playField.slotGroups[3], 10, 10);
 playField.populate();
 
 const cardBattle = new CardBattle(playField, drawPile);
-
-input.keyToCommand.set(Key.UP, () => player.moveUp());
-input.keyToCommand.set(Key.DOWN, () => player.moveDown());
-input.keyToCommand.set(Key.LEFT, () => player.moveLeft());
-input.keyToCommand.set(Key.RIGHT, () => player.moveRight());
 
 const game = new GameManager(input, cardBattle, overworld);
 
