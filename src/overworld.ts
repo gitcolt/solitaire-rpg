@@ -38,5 +38,14 @@ export class Overworld {
                   ctx.canvas.width,
                   ctx.canvas.height);
     this.player.render(ctx);
+
+    if (window.debug) {
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, 300, 200);
+      ctx.fillStyle = 'white';
+      ctx.font = '20px Arial';
+      const debugText = `x: ${this.player.posX}, y: ${this.player.posY}`;
+      ctx.fillText(debugText, 10, 30);
+    }
   }
 }

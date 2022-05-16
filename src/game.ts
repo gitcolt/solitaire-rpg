@@ -3,6 +3,7 @@ import {Overworld} from './overworld';
 import {InputManager, Key} from './input';
 import {pointInBounds} from './utils';
 import {CARD_WIDTH, CARD_HEIGHT} from './card';
+import {Animation, BattleTransitionAnimation} from './anim';
 
 export enum GameMode {
   CARD_BATTLE,
@@ -14,19 +15,36 @@ export class GameManager {
   input: InputManager;
   cardBattle: CardBattle;
   overworld: Overworld;
+  transitionAnimation: Animation;
 
   constructor(input: InputManager, cardBattle: CardBattle, overworld: Overworld) {
     this.currMode = GameMode.OVERWORLD;
     this.input = input;
     this.cardBattle = cardBattle;
     this.overworld = overworld;
+    this.transitionAnimation = null;
   }
 
   transitionToMode(mode: GameMode) {
-    this.currMode = mode;
+    this.transitionAnimation = new BattleTransitionAnimation(50, () => {
+      this.transitionAnimation = null;
+      this.currMode = mode;
+    });
+    this.transitionAnimation.start();
   }
 
-  processInput() {
+  update() {
+    if (this.transitionAnimation)
+      return;
+    if (this.currMode == GameMode.OVERWORLD) {
+      if (pointInBounds(this.overworld.player.posX,
+                        this.overworld.player.posY,
+                        110,
+                        50,
+                        140,
+                        80))
+        this.transitionToMode(GameMode.CARD_BATTLE);
+    }
     this.input.processInput();
   }
 
@@ -107,5 +125,10 @@ export class GameManager {
       this.overworld.render(ctx);
     else if (this.currMode == GameMode.CARD_BATTLE)
       this.cardBattle.render(ctx);
+
+    if (this.transitionAnimation) {
+      this.transitionAnimation.render(ctx);
+      this.transitionAnimation.tick();
+    }
   }
 }

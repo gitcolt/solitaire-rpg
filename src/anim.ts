@@ -1,4 +1,4 @@
-abstract class TransitionAnimation {
+export abstract class Animation {
   duration: number;
   currTick: number;
   isPlaying: boolean;
@@ -27,14 +27,17 @@ abstract class TransitionAnimation {
   abstract render(ctx: CanvasRenderingContext2D): void;
 }
 
-export class BattleTransitionAnimation extends TransitionAnimation {
+export class BattleTransitionAnimation extends Animation {
   constructor(duration: number, callback: () => void = null) {
     super(duration, callback);
   }
 
   render(ctx: CanvasRenderingContext2D) {
+    if (!this.isPlaying)
+      return;
+
     if (this.currTick % 5 == 0) {
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     } 
   }

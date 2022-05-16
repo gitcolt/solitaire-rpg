@@ -82,7 +82,7 @@ let frameCount = 0;
 (function loop() {
   ctx.clearRect(0, 0, can.width, can.height);
 
-  game.processInput();
+  game.update();
   game.render(ctx);
 
   ++frameCount;
