@@ -59,11 +59,11 @@ export class Player {
       ctx.beginPath();
       ctx.lineWidth = 4;
       ctx.strokeStyle = 'red';
-      ctx.arc(this.posX, this.posY, 10, 0, 2*Math.PI);
+      ctx.arc(ctx.canvas.width/2, ctx.canvas.height/2, 10, 0, 2*Math.PI);
       ctx.stroke();
-      ctx.moveTo(this.posX, this.posY);
-      ctx.lineTo(this.posX + Math.cos(this.angle) * 20,
-                 this.posY + Math.sin(this.angle) * 20);
+      ctx.moveTo(ctx.canvas.width/2, ctx.canvas.height/2);
+      ctx.lineTo(ctx.canvas.width/2 + Math.cos(this.angle) * 20,
+                 ctx.canvas.height/2 + Math.sin(this.angle) * 20);
       ctx.stroke();
       return;
     }
@@ -73,8 +73,8 @@ export class Player {
                   0,
                   this.textureAtlas.height,
                   this.textureAtlas.height,
-                  this.posX,
-                  this.posY,
+                  ctx.canvas.width / 2 - 40,
+                  ctx.canvas.height / 2 - 40,
                   80,
                   80);
   }

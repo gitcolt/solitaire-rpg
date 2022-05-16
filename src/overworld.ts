@@ -4,6 +4,8 @@ import overworldImagePath from './assets/overworld.png';
 export class Overworld {
   player: Player;
   backgroundTexture: HTMLImageElement;
+  offsetX: number;
+  offsetY: number;
 
   constructor(player: Player) {
     this.player = player;
@@ -19,9 +21,22 @@ export class Overworld {
   render(ctx: CanvasRenderingContext2D) {
     if (!this.backgroundTexture)
       return;
+
+    this.offsetX = this.player.posX;
+    this.offsetY = this.player.posY;
+
+    const tileWidth = this.backgroundTexture.width / 22;
+    const tileHeight = this.backgroundTexture.height / 25;
+
     ctx.drawImage(this.backgroundTexture,
-                  0, 0,
-                  ctx.canvas.width, ctx.canvas.height);
+                  this.offsetX,
+                  this.offsetY,
+                  tileWidth * 15,
+                  tileHeight * 7,
+                  0,
+                  0,
+                  ctx.canvas.width,
+                  ctx.canvas.height);
     this.player.render(ctx);
   }
 }
