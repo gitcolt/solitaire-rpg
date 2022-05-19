@@ -1,6 +1,5 @@
 import playerTextureAtlasPath from './assets/player.png';
-
-const PLAYER_RADIUS = 10;
+import {TILE_SIZE} from './overworld';
 
 export class Player {
   posX: number;
@@ -15,7 +14,7 @@ export class Player {
     this.posX = posX;
     this.posY = posY;
     this.xp = 0;
-    this.speed = 5;
+    this.speed = TILE_SIZE / 8;
     this.angle = 0;
     this.textureAtlas = null;
     this.textureAtlasIdx = 0;
@@ -55,15 +54,18 @@ export class Player {
     if (!this.textureAtlas)
       return;
 
+    const screenPosX = (Math.round(((ctx.canvas.width/TILE_SIZE))) - 1) / 2 * TILE_SIZE + TILE_SIZE/2;
+    const screenPosY = (Math.round(((ctx.canvas.height/TILE_SIZE))) - 1) / 2* TILE_SIZE + TILE_SIZE/2;
+
     if (window.debug) {
       ctx.beginPath();
       ctx.lineWidth = 4;
       ctx.strokeStyle = 'red';
-      ctx.arc(ctx.canvas.width/2, ctx.canvas.height/2, 10, 0, 2*Math.PI);
+      ctx.arc(screenPosX, screenPosY, 10, 0, 2*Math.PI);
       ctx.stroke();
-      ctx.moveTo(ctx.canvas.width/2, ctx.canvas.height/2);
-      ctx.lineTo(ctx.canvas.width/2 + Math.cos(this.angle) * 20,
-                 ctx.canvas.height/2 + Math.sin(this.angle) * 20);
+      ctx.moveTo(screenPosX, screenPosY);
+      ctx.lineTo(screenPosX + Math.cos(this.angle) * 20,
+                 screenPosY + Math.sin(this.angle) * 20);
       ctx.stroke();
       return;
     }
@@ -73,9 +75,9 @@ export class Player {
                   0,
                   this.textureAtlas.height,
                   this.textureAtlas.height,
-                  ctx.canvas.width / 2 - 40,
-                  ctx.canvas.height / 2 - 40,
-                  80,
-                  80);
+                  screenPosX - TILE_SIZE/2,
+                  screenPosY - TILE_SIZE/2,
+                  TILE_SIZE,
+                  TILE_SIZE);
   }
 }

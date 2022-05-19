@@ -37,6 +37,7 @@ export class GameManager {
     if (this.transitionAnimation)
       return;
     if (this.currMode == GameMode.OVERWORLD) {
+      this.overworld.update();
       if (pointInBounds(this.overworld.player.posX,
                         this.overworld.player.posY,
                         110,

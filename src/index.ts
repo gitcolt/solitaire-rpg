@@ -42,14 +42,15 @@ function onClickCardBattleMode(e: MouseEvent) {
 
 const input = new InputManager();
 
-const player = new Player(200, 80);
-
-input.keyToCommand.set(Key.UP, () => player.moveUp());
-input.keyToCommand.set(Key.DOWN, () => player.moveDown());
-input.keyToCommand.set(Key.LEFT, () => player.moveLeft());
-input.keyToCommand.set(Key.RIGHT, () => player.moveRight());
+const player = new Player(0, 0);
 
 const overworld = new Overworld(player);
+overworld.createGrid(ctx);
+
+input.keyToCommand.set(Key.UP, () => overworld.moveUp());
+input.keyToCommand.set(Key.DOWN, () => overworld.moveDown());
+input.keyToCommand.set(Key.LEFT, () => overworld.moveLeft());
+input.keyToCommand.set(Key.RIGHT, () => overworld.moveRight());
 
 const drawPile = new DrawPile();
 
