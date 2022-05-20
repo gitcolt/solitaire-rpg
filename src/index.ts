@@ -5,12 +5,16 @@ import {CardBattle} from './cardBattle';
 import {GameManager} from './game';
 import {InputManager, Key} from './input';
 
+import * as dat from 'dat.gui';
+
 import './styles.less';
 
 declare global {
-  interface Window { debug: boolean; }
+  interface Window { debug: boolean; gui: dat.GUI}
 }
 window.debug = false;
+
+window.gui = new dat.GUI();
 
 const can: HTMLCanvasElement = document.querySelector('canvas');
 const ctx = can.getContext('2d');
@@ -43,6 +47,8 @@ function onClickCardBattleMode(e: MouseEvent) {
 const input = new InputManager();
 
 const player = new Player(0, 0);
+window.gui.add(player, 'posX');
+window.gui.add(player, 'posY');
 
 const overworld = new Overworld(player);
 overworld.createGrid(ctx);
@@ -54,25 +60,11 @@ input.keyToCommand.set(Key.RIGHT, () => overworld.moveRight());
 
 const drawPile = new DrawPile();
 
-const playField = new PlayField(400, 200);
-playField.addSlotGroup(15, 15);
-playField.addSlotToSlotGroup(playField.slotGroups[0], 0, 0);
-playField.addSlotToSlotGroup(playField.slotGroups[0], 5, 5);
-playField.addSlotToSlotGroup(playField.slotGroups[0], 10, 10);
-playField.addSlotGroup(115, 15);
-playField.addSlotToSlotGroup(playField.slotGroups[1], 0, 0);
-playField.addSlotToSlotGroup(playField.slotGroups[1], 5, 5);
-playField.addSlotToSlotGroup(playField.slotGroups[1], 10, 10);
-playField.addSlotToSlotGroup(playField.slotGroups[1], 15, 15);
-playField.addSlotGroup(215, 15);
-playField.addSlotToSlotGroup(playField.slotGroups[2], 0, 0);
-playField.addSlotToSlotGroup(playField.slotGroups[2], 5, 5);
-playField.addSlotToSlotGroup(playField.slotGroups[2], 10, 10);
-playField.addSlotToSlotGroup(playField.slotGroups[2], 15, 15);
-playField.addSlotGroup(315, 15);
-playField.addSlotToSlotGroup(playField.slotGroups[3], 0, 0);
-playField.addSlotToSlotGroup(playField.slotGroups[3], 5, 5);
-playField.addSlotToSlotGroup(playField.slotGroups[3], 10, 10);
+const playField = new PlayField(400, 100, 400, 200);
+playField.addSlotAt(playField.posX + 15,  playField.posY + 15, 0);
+playField.addSlotAt(playField.posX + 115, playField.posY + 15, 0);
+playField.addSlotAt(playField.posX + 40,  playField.posY + 15, 1);
+playField.addSlotAt(playField.posX + 140, playField.posY + 15, 1);
 playField.populate();
 
 const cardBattle = new CardBattle(playField, drawPile);
@@ -85,6 +77,8 @@ let frameCount = 0;
 
   game.update();
   game.render(ctx);
+
+  window.gui.updateDisplay();
 
   ++frameCount;
   requestAnimationFrame(loop);

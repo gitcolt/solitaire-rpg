@@ -2,7 +2,7 @@ import {CardBattle} from './cardBattle';
 import {Overworld} from './overworld';
 import {InputManager, Key} from './input';
 import {pointInBounds} from './utils';
-import {CARD_WIDTH, CARD_HEIGHT} from './card';
+import {CARD_WIDTH, CARD_HEIGHT, slotClicked} from './card';
 import {Animation, BattleTransitionAnimation} from './anim';
 
 export enum GameMode {
@@ -100,22 +100,14 @@ export class GameManager {
                       this.cardBattle.drawPilePosY + CARD_HEIGHT)) {
       this.cardBattle.onClickDrawPile();
     } 
-    else if (pointInBounds(x, y,
-                           this.cardBattle.playFieldPosX,
-                           this.cardBattle.playFieldPosY,
-                           this.cardBattle.playFieldPosX + this.cardBattle.playField.width,
-                           this.cardBattle.playFieldPosY + this.cardBattle.playField.height)) {
-      const clickedSlot = this.cardBattle.playField.slotGroups.map(sg => {
-                                                            const slotsWithCards = sg.slots.filter(s => s.card);
-                                                            return slotsWithCards.length ? slotsWithCards[slotsWithCards.length - 1] :
-                                                                                           null;
-                                                     }).filter(s => s != null)
-                                                       .find(s => pointInBounds(
-                                                         x, y,
-                                                         this.cardBattle.playFieldPosX + s.offsetX,
-                                                         this.cardBattle.playFieldPosY + s.offsetY,
-                                                         this.cardBattle.playFieldPosX + s.offsetX + CARD_WIDTH,
-                                                         this.cardBattle.playFieldPosY + s.offsetY + CARD_HEIGHT));
+    else if (this.cardBattle.playField.clicked(x, y)) {
+      const slots = this.cardBattle.playField.slots;
+      const topZIndexWithCard = slots.filter(s => s.card)
+                                     .reduce((prev, curr) =>
+                                             prev.zIndex > curr.zIndex ? prev : curr
+      ).zIndex;
+      const clickedSlot = slots.filter(s => s.zIndex == topZIndexWithCard)
+                               .find(s => slotClicked(x, y, s));
       if (clickedSlot)
         this.cardBattle.onClickSlot(clickedSlot);
     }

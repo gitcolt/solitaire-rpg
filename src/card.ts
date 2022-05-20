@@ -1,3 +1,5 @@
+import {pointInBounds} from './utils';
+
 export enum Suit {
   HEARTS,
   SPADES,
@@ -138,62 +140,55 @@ export class DrawPile {
   }
 }
 
-export interface SlotGroup {
-  offsetX: number;
-  offsetY: number;
-  slots: Slot[];
-}
-
 export interface Slot {
-  offsetX: number;
-  offsetY: number;
+  posX: number;
+  posY: number;
+  zIndex: number;
   card: Card;
 }
 
+export function slotClicked(x: number, y: number, slot: Slot) {
+  return pointInBounds(x, y,
+                       slot.posX, slot.posY,
+                       slot.posX + CARD_WIDTH, slot.posY + CARD_HEIGHT);
+}
+
 export class PlayField {
+  posX: number;
+  posY: number;
   width: number;
   height: number;
-  slotGroups: SlotGroup[];
+  slots: Slot[];
 
-  constructor(width: number, height: number) {
+  constructor(posX: number, posY: number, width: number, height: number) {
+    this.posX = posX;
+    this.posY = posY;
     this.width = width;
     this.height = height;
-    this.slotGroups = [];
+    this.slots = [];
   }
 
   populate() {
     const deck = createDeck();
     shuffle(deck);
-    this.slotGroups.forEach(sg => {
-      sg.slots.forEach(slot => {
-        slot.card = deck.shift();
-        slot.card.isFaceUp = true;
-      });
-    });
-  }
 
-  addSlotGroup(offsetX: number, offsetY: number) {
-    this.slotGroups.push({
-      offsetX,
-      offsetY,
-      slots: [],
-    });
-  }
-
-  addSlotToSlotGroup(slotGroup: SlotGroup, offsetX: number, offsetY: number) {
-    /*
-    // maybe the playfield grows dynamically as you add slots/slot groups?
-    if (offsetX + CARD_WIDTH  > this.width  ||
-        offsetY + CARD_HEIGHT > this.height ||
-        offsetX < 0 || offsetY < 0) {
-      console.error('Attempting to add slot outside of play field bounds');
-      return;
+    let zIndex = 0;
+    while (this.slots.some(s => s.zIndex == zIndex)) {
+      this.slots.filter(s => s.zIndex == zIndex)
+                .forEach(s => {
+                  s.card = deck.shift();
+                  s.card.isFaceUp = true;
+                });
+      ++zIndex;
     }
-   */
-    slotGroup.slots.push({
-      offsetX: slotGroup.offsetX + offsetX,
-      offsetY: slotGroup.offsetY + offsetY,
+  }
+
+  addSlotAt(posX: number, posY: number, zIndex: number) {
+    this.slots.push({
+      posX,
+      posY,
       card: null,
+      zIndex,
     });
   }
 
@@ -216,36 +211,38 @@ export class PlayField {
   }
 
   checkForWin(): boolean {
-    return this.slotGroups.every(sg => !sg.slots.some(s => s.card));
+    return !this.slots.some(s => s.card);
   }
 
-  render(ctx: CanvasRenderingContext2D, posX: number, posY: number) {
-    /*
+  clicked(x: number, y: number) {
+    return pointInBounds(x, y,
+                         this.posX, this.posY,
+                         this.posX + this.width, this.posY + this.height);
+  }
+
+  render(ctx: CanvasRenderingContext2D) {
     if (window.debug) {
       const slotMargin = 10;
       this.slots.forEach(s => {
         ctx.beginPath();
         ctx.strokeStyle = 'green';
         ctx.lineWidth = 2;
-        ctx.strokeRect(posX + s.offsetX - slotMargin,
-                       posY + s.offsetY - slotMargin,
+        ctx.strokeRect(s.posX - slotMargin,
+                       s.posY - slotMargin,
                        CARD_WIDTH + slotMargin * 2,
                        CARD_HEIGHT + slotMargin * 2);
       });
     }
-   */
 
-    this.slotGroups.forEach(sg => {
-      sg.slots.forEach(s => {
-        if (!s.card)
-          return;
-        renderCard(ctx, s.card, posX + s.offsetX, posY + s.offsetY);
-      });
+    this.slots.forEach(s => {
+      if (!s.card)
+        return;
+      renderCard(ctx, s.card, s.posX, s.posY);
     });
 
     ctx.beginPath();
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 3;
-    ctx.strokeRect(posX, posY, this.width, this.height);
+    ctx.strokeRect(this.posX, this.posY, this.width, this.height);
   }
 }
