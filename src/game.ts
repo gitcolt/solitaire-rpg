@@ -4,6 +4,7 @@ import {InputManager, Key} from './input';
 import {pointInBounds} from './utils';
 import {CARD_WIDTH, CARD_HEIGHT} from './card';
 import {Animation, BattleTransitionAnimation} from './anim';
+import {SoundManager, Sounds} from './soundManager';
 
 export enum GameMode {
   CARD_BATTLE,
@@ -16,6 +17,7 @@ export class GameManager {
   cardBattle: CardBattle;
   overworld: Overworld;
   transitionAnimation: Animation;
+  soundManager: SoundManager;
 
   constructor(input: InputManager, cardBattle: CardBattle, overworld: Overworld) {
     this.currMode = GameMode.OVERWORLD;
@@ -23,6 +25,7 @@ export class GameManager {
     this.cardBattle = cardBattle;
     this.overworld = overworld;
     this.transitionAnimation = null;
+    this.soundManager = SoundManager.Instance;
   }
 
   transitionToMode(mode: GameMode) {
@@ -66,6 +69,21 @@ export class GameManager {
       case 'd':
       case 'ArrowRight':
         this.input.keyStates.set(Key.RIGHT, true);
+        break;
+      case '-':
+        this.soundManager.decreaseVolume();
+        break;
+      case '=':
+        this.soundManager.increaseVolume();
+        break;
+      case '0':
+        this.soundManager.toggleMute();
+        break;
+      case '9':
+        this.soundManager.nextSong();
+        break;
+      case '8':
+        this.soundManager.playSound(Sounds.Jump);
         break;
     }
   }
