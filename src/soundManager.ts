@@ -9,6 +9,8 @@ import jump from './assets/sounds/jump.mp3';
  * @method increaseVolume Increase the main volume by .05
  * @method decreaseVolume Decrease the main volume by .05
  * @method toggleMute Toggle the muting of all sounds
+ * @method nextSong Play the next music track
+ * @method playSound Play a sound effect
  */
 export class SoundManager {
     private static _instance: SoundManager;
@@ -25,7 +27,7 @@ export class SoundManager {
 
     private constructor(){
 
-        this._muted = false;
+        this._muted = true;
         this._musicTracks = [
             new Audio(davidFisliyanMusic1),
             new Audio(davidFisliyanMusic2)
@@ -103,6 +105,8 @@ export class SoundManager {
      * @returns void
      */
     public nextSong(): void {
+        if(this._muted)
+            return
         if(!this._musicTracks[this._currentMusicTrackIndex].paused || this._musicTracks[this._currentMusicTrackIndex].currentTime){
             this._musicTracks[this._currentMusicTrackIndex].currentTime = 0;
             this._musicTracks[this._currentMusicTrackIndex].pause();
@@ -119,12 +123,17 @@ export class SoundManager {
             resp.then(_ => {
                 // autoplay starts!
             }).catch(error => {
-               console.debug("Looks like audio was unable to auto play")
-               setTimeout(() => this.nextSong(),1000);
+               console.debug("Looks like audio was unable to auto play. Interact with the web page")
+               setTimeout(() => this.nextSong(), 1000);
             });
         }
     }
 
+    /**
+     * Play a sound effect
+     * @param soundName 
+     * @returns void
+     */
     public playSound(soundName: Sounds): void {
         if(this._muted)
             return
