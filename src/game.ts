@@ -2,7 +2,7 @@ import {CardBattle} from './cardBattle';
 import {Overworld} from './overworld';
 import {InputManager, Key} from './input';
 import {pointInBounds} from './utils';
-import {slotClicked} from './card';
+import {slotClicked} from './slot';
 import {Animation, BattleTransitionAnimation} from './anim';
 
 export enum GameMode {

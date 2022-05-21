@@ -1,6 +1,7 @@
 import {Player} from './player';
 import {Overworld} from './overworld';
-import {DrawPile, PlayField} from './card';
+import {DrawPile} from './drawPile';
+import {PlayField} from './playField';
 import {CardBattle} from './cardBattle';
 import {GameManager} from './game';
 import {InputManager, Key} from './input';

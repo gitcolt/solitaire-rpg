@@ -1,4 +1,7 @@
-import {Card, renderCard, DrawPile, PlayField, Slot} from './card';
+import {Card, renderCard} from './card';
+import {PlayField} from './playField';
+import {DrawPile} from './drawPile';
+import {Slot} from './slot';
 
 export class CardBattle {
   playField: PlayField;
