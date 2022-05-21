@@ -5,6 +5,7 @@ import {PlayField} from './playField';
 import {CardBattle} from './cardBattle';
 import {GameManager} from './game';
 import {InputManager, Key} from './input';
+import {NPC} from './npc';
 
 import * as dat from 'dat.gui';
 
@@ -42,22 +43,20 @@ window.addEventListener('click', (e: MouseEvent) => {
   game.onClick(e);
 });
 
-function onClickCardBattleMode(e: MouseEvent) {
-}
-
 const input = new InputManager();
 
-const player = new Player(0, 0);
-window.gui.add(player, 'posX');
-window.gui.add(player, 'posY');
+const player = new Player();
 
-const overworld = new Overworld(player);
+const overworld = new Overworld(32, 32);
 overworld.createGrid(ctx);
+overworld.addPlayerAt(player, 14, 13);
+const npc = new NPC();
+overworld.addEntityAt(npc, 10, 11);
 
-input.keyToCommand.set(Key.UP, () => overworld.moveUp());
-input.keyToCommand.set(Key.DOWN, () => overworld.moveDown());
-input.keyToCommand.set(Key.LEFT, () => overworld.moveLeft());
-input.keyToCommand.set(Key.RIGHT, () => overworld.moveRight());
+input.keyToCommand.set(Key.UP, () => overworld.moveEntityUp(player));
+input.keyToCommand.set(Key.DOWN, () => overworld.moveEntityDown(player));
+input.keyToCommand.set(Key.LEFT, () => overworld.moveEntityLeft(player));
+input.keyToCommand.set(Key.RIGHT, () => overworld.moveEntityRight(player));
 
 const drawPile = new DrawPile(600, 400);
 

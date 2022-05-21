@@ -18,10 +18,11 @@ export class GameManager {
   transitionAnimation: Animation;
 
   constructor(input: InputManager, cardBattle: CardBattle, overworld: Overworld) {
-    this.currMode = GameMode.OVERWORLD;
+    this.currMode = GameMode.OVERWORLD
     this.input = input;
     this.cardBattle = cardBattle;
     this.overworld = overworld;
+    this.overworld.onBattleInitiated = () => this.transitionToMode(GameMode.CARD_BATTLE);
     this.transitionAnimation = null;
   }
 
@@ -38,13 +39,6 @@ export class GameManager {
       return;
     if (this.currMode == GameMode.OVERWORLD) {
       this.overworld.update();
-      if (pointInBounds(this.overworld.player.posX,
-                        this.overworld.player.posY,
-                        110,
-                        50,
-                        140,
-                        80))
-        this.transitionToMode(GameMode.CARD_BATTLE);
     }
     this.input.processInput();
   }
