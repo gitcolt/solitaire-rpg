@@ -58,7 +58,7 @@ input.keyToCommand.set(Key.DOWN, () => overworld.moveDown());
 input.keyToCommand.set(Key.LEFT, () => overworld.moveLeft());
 input.keyToCommand.set(Key.RIGHT, () => overworld.moveRight());
 
-const drawPile = new DrawPile();
+const drawPile = new DrawPile(600, 400);
 
 const playField = new PlayField(400, 100, 400, 200);
 playField.addSlotAt(playField.posX + 15,  playField.posY + 15, 0);

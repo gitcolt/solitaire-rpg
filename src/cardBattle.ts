@@ -4,15 +4,11 @@ export class CardBattle {
   playField: PlayField;
   drawPile: DrawPile;
   drawnCard: Card;
-  drawPilePosX: number;
-  drawPilePosY: number;
 
   constructor(playField: PlayField, drawPile: DrawPile) {
     this.playField = playField;
     this.drawPile = drawPile;
     this.drawnCard = null;
-    this.drawPilePosX = 600;
-    this.drawPilePosY = 400;
     this.drawCard();
   }
 
@@ -36,9 +32,9 @@ export class CardBattle {
   }
 
   render(ctx: CanvasRenderingContext2D) {
-    this.drawPile.render(ctx, this.drawPilePosX, this.drawPilePosY);
+    this.drawPile.render(ctx);
     this.playField.render(ctx);
     if (this.drawnCard)
-      renderCard(ctx, this.drawnCard, this.drawPilePosX + 100, this.drawPilePosY);
+      renderCard(ctx, this.drawnCard, this.drawPile.posX + 100, this.drawPile.posY);
   }
 }

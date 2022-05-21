@@ -120,23 +120,51 @@ export function createDeck(): Card[] {
 
 export class DrawPile {
   cards: Card[];
+  posX: number;
+  posY: number;
+  topSlot: Slot;
+  bottomSlot: Slot;
 
-  constructor() {
-    this.cards = createDeck();
-    shuffle(this.cards);
+  constructor(posX: number, posY: number) {
+    const cards = createDeck();
+    shuffle(cards);
+    this.cards = cards;
+    this.posX = posX;
+    this.posY = posY;
+    this.topSlot = {
+      posX: this.posX + 15,
+      posY: this.posY - 15,
+      card: this.cards[this.cards.length - 1],
+      zIndex: 1,
+    };
+    this.bottomSlot = {
+      posX: this.posX,
+      posY: this.posY,
+      card: this.cards[this.cards.length - 2],
+      zIndex: 0,
+    };
   }
 
   drawCard(): Card {
-    return this.cards.shift() || null;
+    const drawnCard = this.cards.shift() || null;
+    if (this.cards.length >= 2) {
+      this.topSlot.card = this.cards[this.cards.length - 1];
+      this.bottomSlot.card = this.cards[this.cards.length - 2];
+    } else if (this.cards.length == 1) {
+      this.topSlot.card = null;
+      this.bottomSlot.card = this.cards[this.cards.length - 1];
+    } else {
+      this.topSlot.card = null;
+      this.bottomSlot.card = null;
+    }
+    return drawnCard;
   }
 
-  render(ctx: CanvasRenderingContext2D, posX: number, posY: number) {
-    if (this.cards.length > 1)
-      renderCard(ctx, this.cards[1], posX, posY);
-    if (this.cards.length > 0) {
-      [posX, posY] = this.cards.length == 1 ? [posX, posY] : [posX + 10, posY - 10];
-      renderCard(ctx, this.cards[0], posX, posY);
-    }
+  render(ctx: CanvasRenderingContext2D) {
+    if (this.bottomSlot.card)
+      renderCard(ctx, this.bottomSlot.card, this.bottomSlot.posX, this.bottomSlot.posY);
+    if (this.topSlot.card)
+      renderCard(ctx, this.topSlot.card, this.topSlot.posX, this.topSlot.posY);
   }
 }
 
@@ -147,7 +175,7 @@ export interface Slot {
   card: Card;
 }
 
-export function slotClicked(x: number, y: number, slot: Slot) {
+export function slotClicked(slot: Slot, x: number, y: number) {
   return pointInBounds(x, y,
                        slot.posX, slot.posY,
                        slot.posX + CARD_WIDTH, slot.posY + CARD_HEIGHT);

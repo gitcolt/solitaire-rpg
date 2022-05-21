@@ -2,7 +2,7 @@ import {CardBattle} from './cardBattle';
 import {Overworld} from './overworld';
 import {InputManager, Key} from './input';
 import {pointInBounds} from './utils';
-import {CARD_WIDTH, CARD_HEIGHT, slotClicked} from './card';
+import {slotClicked} from './card';
 import {Animation, BattleTransitionAnimation} from './anim';
 
 export enum GameMode {
@@ -93,21 +93,21 @@ export class GameManager {
 
   onClick(e: MouseEvent) {
     const [x, y] = [e.clientX, e.clientY];
-    if (pointInBounds(x, y,
-                      this.cardBattle.drawPilePosX,
-                      this.cardBattle.drawPilePosY,
-                      this.cardBattle.drawPilePosX + CARD_WIDTH,
-                      this.cardBattle.drawPilePosY + CARD_HEIGHT)) {
-      this.cardBattle.onClickDrawPile();
-    } 
-    else if (this.cardBattle.playField.clicked(x, y)) {
+    if (this.cardBattle.drawPile.topSlot.card) {
+      if (slotClicked(this.cardBattle.drawPile.topSlot, x, y))
+        this.cardBattle.onClickDrawPile();
+    } else if (this.cardBattle.drawPile.bottomSlot.card) {
+      if (slotClicked(this.cardBattle.drawPile.bottomSlot, x, y))
+        this.cardBattle.onClickDrawPile();
+    }
+    if (this.cardBattle.playField.clicked(x, y)) {
       const slots = this.cardBattle.playField.slots;
       const topZIndexWithCard = slots.filter(s => s.card)
                                      .reduce((prev, curr) =>
                                              prev.zIndex > curr.zIndex ? prev : curr
       ).zIndex;
       const clickedSlot = slots.filter(s => s.zIndex == topZIndexWithCard)
-                               .find(s => slotClicked(x, y, s));
+                               .find(s => slotClicked(s, x, y));
       if (clickedSlot)
         this.cardBattle.onClickSlot(clickedSlot);
     }
