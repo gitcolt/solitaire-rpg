@@ -1,6 +1,6 @@
 import {Player} from './player';
 import overworldImagePath from './assets/overworld.png';
-import {tileToScreenPos, lerp} from './utils';
+import {tileToScreenPos} from './utils';
 import {Entity} from './entity';
 
 export const SRC_TILE_SIZE = 1024/32;

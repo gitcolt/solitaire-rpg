@@ -6,17 +6,18 @@ import {CardBattle} from './cardBattle';
 import {GameManager} from './game';
 import {InputManager, Key} from './input';
 import {NPC} from './npc';
-
-import * as dat from 'dat.gui';
+import Stats from 'stats.js';
 
 import './styles.less';
 
 declare global {
-  interface Window { debug: boolean; gui: dat.GUI}
+  interface Window { debug: boolean; }
 }
 window.debug = false;
 
-window.gui = new dat.GUI();
+const stats = new Stats();
+stats.showPanel(0);
+document.body.appendChild(stats.dom);
 
 const can: HTMLCanvasElement = document.querySelector('canvas');
 const ctx = can.getContext('2d');
@@ -73,13 +74,13 @@ const game = new GameManager(input, cardBattle, overworld);
 
 let frameCount = 0;
 (function loop() {
+  stats.begin();
   ctx.clearRect(0, 0, can.width, can.height);
 
   game.update();
   game.render(ctx);
 
-  window.gui.updateDisplay();
-
   ++frameCount;
+  stats.end();
   requestAnimationFrame(loop);
 })();
