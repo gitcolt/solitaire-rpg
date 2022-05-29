@@ -14,7 +14,7 @@ export interface Tile {
 
 export class Overworld {
   player: Player;
-  tileGrid: Tile[][];
+  tiles: Tile[][];
   backgroundTexture: HTMLImageElement;
   offsetX: number;
   offsetY: number;
@@ -23,11 +23,11 @@ export class Overworld {
   onBattleInitiated: () => void;
 
   constructor(numGridRows: number, numGridCols: number) {
-    this.tileGrid = [];
+    this.tiles = [];
     for (let r = 0; r < numGridRows; ++r) {
-      this.tileGrid.push([]);
+      this.tiles.push([]);
       for (let c = 0; c < numGridCols; ++c) {
-        this.tileGrid[r].push({
+        this.tiles[r].push({
           x: c,
           y: r,
           entity: null,
@@ -45,7 +45,7 @@ export class Overworld {
   }
 
   addEntityAt(entity: Entity, tileX: number, tileY: number) {
-    const tile = this.tileGrid[tileY][tileX];
+    const tile = this.tiles[tileY][tileX];
     if (tile.entity)
       throw new Error('Trying to add an entity to an already occupied tile');
     tile.entity = entity;
@@ -60,7 +60,7 @@ export class Overworld {
   moveEntityUp(entity: Entity) {
     if (entity.isWalking)
       return;
-    const destTile = this.tileGrid[entity.currTile.y - 1][entity.currTile.x];
+    const destTile = this.tiles[entity.currTile.y - 1][entity.currTile.x];
     if (destTile.entity) {
       this.onBattleInitiated();
       return;
@@ -73,7 +73,7 @@ export class Overworld {
   moveEntityDown(entity: Entity) {
     if (entity.isWalking)
       return;
-    const destTile = this.tileGrid[entity.currTile.y + 1][entity.currTile.x];
+    const destTile = this.tiles[entity.currTile.y + 1][entity.currTile.x];
     if (destTile.entity) {
       this.onBattleInitiated();
       return;
@@ -86,7 +86,7 @@ export class Overworld {
   moveEntityLeft(entity: Entity) {
     if (entity.isWalking)
       return;
-    const destTile = this.tileGrid[entity.currTile.y][entity.currTile.x - 1];
+    const destTile = this.tiles[entity.currTile.y][entity.currTile.x - 1];
     if (destTile.entity) {
       this.onBattleInitiated();
       return;
@@ -99,7 +99,7 @@ export class Overworld {
   moveEntityRight(entity: Entity) {
     if (entity.isWalking)
       return;
-    const destTile = this.tileGrid[entity.currTile.y][entity.currTile.x + 1];
+    const destTile = this.tiles[entity.currTile.y][entity.currTile.x + 1];
     if (destTile.entity) {
       this.onBattleInitiated();
       return;
@@ -110,7 +110,7 @@ export class Overworld {
   }
 
   update() {
-    this.tileGrid.forEach(r => {
+    this.tiles.forEach(r => {
       r.forEach(tile => {
         if (!tile.entity)
           return;
@@ -157,7 +157,7 @@ export class Overworld {
                   ctx.canvas.width,
                   ctx.canvas.height);
 
-    this.tileGrid.forEach(r => {
+    this.tiles.forEach(r => {
       r.forEach(tile => {
         const entity = tile.entity;
         if (!entity)

@@ -50,7 +50,9 @@ export abstract class Entity {
       this.tileOffsetY = this.t * (this.destTile.y - this.currTile.y);
       if (this.t >= 1) {
         this.t = 0;
+        this.currTile.entity = null;
         this.currTile = this.destTile;
+        this.destTile.entity = this;
         this.tileOffsetX = 0;
         this.tileOffsetY = 0;
         this.isWalking = false;
